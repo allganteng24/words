@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>from all to ell</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:"Trebuchet MS",Arial,sans-serif;
+ color:#66566e;overflow-x:hidden;
+ background:
+ radial-gradient(circle at 10% 10%,#ffe1ed,transparent 30%),
+ radial-gradient(circle at 90% 30%,#dedfff,transparent 32%),
+ linear-gradient(135deg,#fff6fa,#f0edff,#edf7ff);
+}
+button{font:inherit;cursor:pointer}
+#intro{
+ position:fixed;inset:0;z-index:10;
+ display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+ text-align:center;padding:20px;
+ background:linear-gradient(140deg,#fff0f6,#eae7ff,#e8f5ff);
+ transition:opacity .8s,visibility .8s;
+}
+#intro.gone{opacity:0;visibility:hidden;pointer-events:none}
+.envelope{
+ position:relative;width:250px;height:165px;
+ margin:25px auto;background:#f4b1cd;
+ border-radius:12px;cursor:pointer;
+ box-shadow:0 20px 45px #b99abf55;
+ animation:float 3s ease-in-out infinite;
+}
+.envelope:before{
+ content:"";position:absolute;inset:0;z-index:3;
+ background:#ffdae8;
+ clip-path:polygon(0 0,50% 58%,100% 0);
+ transform-origin:top;transition:transform .8s;
+}
+.envelope:after{
+ content:"";position:absolute;inset:0;z-index:4;
+ background:#f8c1d8;
+ clip-path:polygon(0 100%,50% 43%,100% 100%);
+}
+.paper{
+ position:absolute;top:15px;left:25px;right:25px;
+ height:125px;background:#fffafc;border-radius:8px;
+ transition:transform .8s;
+}
+.envelope.open:before{transform:rotateX(180deg)}
+.envelope.open .paper{transform:translateY(-85px)}
+.seal{
+ position:absolute;z-index:5;top:64px;left:50%;
+ transform:translateX(-50%);width:42px;height:42px;
+ background:#fff7fa;border-radius:50%;
+ display:grid;place-items:center;
+}
+.seal:before{
+ content:"";width:14px;height:14px;
+ background:#e8a0bf;transform:rotate(45deg);
+ border-radius:3px;position:relative;
+}
+.seal:after{
+ content:"";position:absolute;width:14px;height:14px;
+ border-radius:50%;background:#e8a0bf;
+ transform:translate(-5px,-5px);
+}
+.envelope.open .seal{opacity:0}
+@keyframes float{
+ 0%,100%{transform:translateY(0) rotate(-2deg)}
+ 50%{transform:translateY(-9px) rotate(2deg)}
+}
+#intro h1{font-size:30px;margin:8px}
+#intro p{line-height:1.9;color:#9484a4;font-size:13px}
+.hint{font-size:11px;letter-spacing:3px;color:#a28db6}
+#app{display:none;padding-bottom:40px}
+header{
+ padding:20px 6%;display:flex;justify-content:space-between;
+ align-items:center;gap:10px;flex-wrap:wrap
+}
+.music{
+ border:1px solid white;background:#ffffffa8;
+ border-radius:30px;padding:10px 14px;color:#8b76a7
+}
+.hero{text-align:center;padding:30px 20px}
+.hero h2{font-size:clamp(34px,7vw,55px);line-height:1.2}
+.hero h2 span{color:#dc91b6}
+.hero p{
+ max-width:550px;margin:auto;color:#91839e;
+ font-size:14px;line-height:2
+}
+
+/* foto diganti ilustrasi gambar, desain halaman tetap */
+.photo{
+ width:min(100%,330px);margin:28px auto;padding:12px;
+ background:#ffffffc9;border:1px solid white;
+ border-radius:20px;box-shadow:0 15px 40px #ab9ec526;
+}
+.cute-gallery{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px;
+ padding:5px
+}
+.cute-picture{
+ min-height:105px;display:grid;place-items:center;
+ border-radius:15px;background:#fff0f6;overflow:hidden
+}
+.cute-picture:nth-child(2){background:#edf2ff}
+.cute-picture:nth-child(3){
+ background:#f3eaff;grid-column:1 / -1;min-height:90px
+}
+.cute-picture svg{width:100px;height:95px}
+.cute-picture:nth-child(3) svg{width:135px;height:85px}
+.caption{font-size:12px;padding:12px;color:#a18bab}
+
+.section{max-width:1000px;margin:30px auto;padding:20px}
+.heading{text-align:center;margin-bottom:25px}
+.heading h3{font-size:30px}
+.heading p{font-size:13px;line-height:1.9;color:#9387a6}
+.shelf{
+ display:flex;gap:20px;overflow-x:auto;padding:20px 8px 30px;
+ scroll-snap-type:x mandatory;justify-content:flex-start
+}
+.book{
+ flex:0 0 245px;height:350px;border:0;
+ border-radius:10px 20px 20px 10px;
+ box-shadow:8px 15px 27px #77618c26;
+ color:#6b536c;position:relative;overflow:hidden;
+ scroll-snap-align:center;transition:transform .3s;
+}
+.book:hover{transform:translateY(-7px)}
+.book:nth-child(1){background:linear-gradient(145deg,#ffdeeb,#f5b4d0)}
+.book:nth-child(2){background:linear-gradient(145deg,#dfebff,#b5cdf6)}
+.book:nth-child(3){background:linear-gradient(145deg,#eee2ff,#c6b2ed)}
+.book:before{
+ content:"";position:absolute;left:13px;top:0;bottom:0;
+ width:7px;background:#ffffff80;border-right:1px solid #ffffffaa
+}
+.cover{
+ height:100%;padding:25px 18px 20px 30px;
+ display:flex;flex-direction:column;align-items:center;
+ text-align:center
+}
+.cover small{font-size:10px;letter-spacing:2px}
+.art{
+ width:135px;height:125px;margin:25px 0 20px;
+ display:grid;place-items:center;
+}
+.art svg{width:120px;height:115px}
+.cover h4{font-size:21px;line-height:1.4;margin:0 0 10px}
+.cover p{font-size:12px;line-height:1.7}
+.cover b{margin-top:auto;font-size:11px}
+.modal{
+ position:fixed;inset:0;z-index:20;
+ display:flex;align-items:center;justify-content:center;
+ padding:15px;background:#382c4eaa;backdrop-filter:blur(8px);
+ opacity:0;visibility:hidden;transition:.3s
+}
+.modal.show{opacity:1;visibility:visible}
+.modal-inner{width:min(850px,100%);max-height:94dvh}
+.modal-top{
+ display:flex;align-items:center;justify-content:space-between;
+ color:white;margin-bottom:12px;font-size:13px
+}
+.close{
+ border:1px solid #ffffff70;background:#ffffff20;
+ color:white;width:40px;height:40px;border-radius:50%;font-size:22px
+}
+.open-book{
+ display:grid;grid-template-columns:1fr 1fr;
+ min-height:350px;max-height:78dvh;
+ perspective:1200px;transform-origin:left center;
+ box-shadow:0 20px 60px #1e19304d;
+}
+.open-book.opening{animation:openBook .8s ease both}
+@keyframes openBook{
+ from{opacity:0;transform:perspective(1200px) rotateY(-35deg) scale(.85)}
+ to{opacity:1;transform:perspective(1200px) rotateY(0) scale(1)}
+}
+.left,.right{
+ min-width:0;overflow-y:auto;padding:clamp(18px,4vw,35px);
+ background:#fffaf0
+}
+.left{
+ border-right:2px solid #e8d5c4;
+ background-image:radial-gradient(#dccbb544 .7px,transparent .7px);
+ background-size:12px 12px
+}
+.left h3{font-size:clamp(20px,3vw,29px);line-height:1.4}
+.left p{font-size:13px;line-height:1.9;color:#998a97}
+.left-art{margin-top:25px}
+.left-art svg{width:100px;height:100px}
+.right{
+ transform-origin:left center;
+ background-image:linear-gradient(90deg,#dfd0bc25 1px,transparent 1px);
+ background-size:18px 18px;
+}
+.right.turn{animation:turnPage .45s ease}
+@keyframes turnPage{
+ 0%{transform:rotateY(-12deg);opacity:.4}
+ 100%{transform:rotateY(0);opacity:1}
+}
+.kicker{font-size:10px;letter-spacing:2px;color:#d18eaf}
+.right h4{font-size:24px;line-height:1.4}
+.page-text{
+ font-family:Georgia,serif;font-size:14px;
+ line-height:2;color:#6f6370
+}
+.page-bottom{
+ border-top:1px solid #e7daca;padding-top:15px;margin-top:25px;
+ display:flex;justify-content:space-between;align-items:center;gap:8px;
+ font-size:11px;color:#9a8999
+}
+.page-bottom button{
+ border:0;background:#d996b7;color:white;
+ padding:10px 14px;border-radius:30px
+}
+.page-bottom button:disabled{opacity:.4}
+footer{text-align:center;color:#a89ab8;font-size:11px;padding:25px}
+@media(max-width:600px){
+ .book{flex-basis:220px;height:325px}
+ .open-book{grid-template-columns:1fr;overflow-y:auto;max-height:78dvh}
+ .left{border-right:0;border-bottom:2px solid #e8d5c4;padding:18px}
+ .left h3{font-size:22px;margin:10px 0}
+ .left-art{display:none}
+ .right{min-height:300px;padding:22px}
+}
+</style>
+</head>
+<body>
+
+<section id="intro">
+ <div class="hint">A LITTLE LETTER FOR YOU</div>
+ <div class="envelope" id="envelope" role="button" tabindex="0"
+      aria-label="buka amplop">
+  <div class="paper"></div><div class="seal"></div>
+ </div>
+ <h1>from all to ell</h1>
+ <p>ada sesuatu yang pengen aku ceritain ke kamu.<br>
+ sent with love, from all to ell.</p>
+ <div class="hint">sent with love · all</div>
+</section>
+
+<main id="app">
+ <header>
+  <b>from all to ell</b>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <button class="music" id="soundToggle">suara: nyala</button>
+   <button class="music" id="closeLetter">tutup amplop</button>
+  </div>
+ </header>
+
+ <section class="hero">
+  <div class="hint">A LITTLE PIECE OF MY HEART</div>
+  <h2>buat ell,<br><span>dari all</span></h2>
+  <p>
+   ada banyak hal yang kadang susah aku ungkapin langsung.
+   jadi aku tulis semuanya di dalam buku kecil ini.
+   baca pelan-pelan yaaa.
+  </p>
+
+  <div class="photo">
+   <div class="cute-gallery">
+    <div class="cute-picture">
+     <svg viewBox="0 0 120 110" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="60" cy="94" rx="35" ry="7" fill="#e8a7c5" opacity=".4"/>
+      <circle cx="60" cy="54" r="34" fill="#fff1f7"/>
+      <circle cx="39" cy="31" r="14" fill="#b78b75"/>
+      <circle cx="81" cy="31" r="14" fill="#b78b75"/>
+      <circle cx="39" cy="31" r="7" fill="#f4d2c6"/>
+      <circle cx="81" cy="31" r="7" fill="#f4d2c6"/>
+      <circle cx="49" cy="52" r="3" fill="#6e5267"/>
+      <circle cx="71" cy="52" r="3" fill="#6e5267"/>
+      <ellipse cx="60" cy="61" rx="5" ry="4" fill="#d58aa9"/>
+      <path d="M53 68 Q60 75 67 68" fill="none" stroke="#95667e" stroke-width="2" stroke-linecap="round"/>
+      <path d="M60 79 C47 68 36 83 60 98 C84 83 73 68 60 79Z" fill="#e9a0c0"/>
+     </svg>
+    </div>
+    <div class="cute-picture">
+     <svg viewBox="0 0 120 110" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="60" cy="95" rx="32" ry="6" fill="#b5c9ef" opacity=".5"/>
+      <path d="M38 47 C25 13 42 5 52 40Z" fill="#fff"/>
+      <path d="M69 40 C79 5 98 15 82 49Z" fill="#fff"/>
+      <path d="M41 40 C34 23 42 20 47 39Z" fill="#e9a9c6"/>
+      <path d="M75 39 C82 22 88 26 80 43Z" fill="#e9a9c6"/>
+      <ellipse cx="60" cy="62" rx="31" ry="30" fill="#fffaf7"/>
+      <circle cx="49" cy="59" r="3" fill="#66566e"/>
+      <circle cx="70" cy="59" r="3" fill="#66566e"/>
+      <ellipse cx="60" cy="67" rx="4" ry="3" fill="#e6a1be"/>
+      <path d="M54 73 Q60 79 66 73" fill="none" stroke="#8f7187" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="43" cy="68" rx="5" ry="3" fill="#f6c4d6"/>
+      <ellipse cx="77" cy="68" rx="5" ry="3" fill="#f6c4d6"/>
+     </svg>
+    </div>
+    <div class="cute-picture">
+     <svg viewBox="0 0 160 95" xmlns="http://www.w3.org/2000/svg">
+      <path d="M80 76 C48 55 31 39 42 24 C52 10 71 20 80 33 C89 20 108 10 118 24 C129 39 112 55 80 76Z" fill="#eaa4c2"/>
+      <path d="M26 27 Q18 18 13 29 Q17 39 26 27Z" fill="#c7b5ed"/>
+      <path d="M132 23 Q144 13 148 26 Q143 36 132 23Z" fill="#c7b5ed"/>
+      <path d="M30 68 Q19 58 15 71 Q19 82 30 68Z" fill="#f1c1d5"/>
+      <path d="M131 68 Q143 57 148 70 Q143 81 131 68Z" fill="#f1c1d5"/>
+      <circle cx="80" cy="48" r="4" fill="#fff2f8"/>
+     </svg>
+    </div>
+   </div>
+   <div class="caption">a little memory from all to ell</div>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="heading">
+   <div class="hint">PILIH SATU BUKU</div>
+   <h3>little books for ell</h3>
+   <p>tekan buku untuk membukanya, lalu baca setiap halaman.</p>
+  </div>
+
+  <div class="shelf">
+   <button class="book" data-book="0">
+    <div class="cover">
+     <small>01 · FROM ALL</small>
+     <div class="art">
+      <svg viewBox="0 0 120 115" xmlns="http://www.w3.org/2000/svg">
+       <ellipse cx="60" cy="96" rx="39" ry="8" fill="#e8a7c5" opacity=".4"/>
+       <circle cx="60" cy="54" r="34" fill="#fff1f7"/>
+       <circle cx="39" cy="31" r="14" fill="#b78b75"/>
+       <circle cx="81" cy="31" r="14" fill="#b78b75"/>
+       <circle cx="39" cy="31" r="7" fill="#f4d2c6"/>
+       <circle cx="81" cy="31" r="7" fill="#f4d2c6"/>
+       <circle cx="49" cy="52" r="3" fill="#6e5267"/>
+       <circle cx="71" cy="52" r="3" fill="#6e5267"/>
+       <ellipse cx="60" cy="61" rx="5" ry="4" fill="#d58aa9"/>
+       <path d="M53 68 Q60 75 67 68" fill="none" stroke="#95667e" stroke-width="2" stroke-linecap="round"/>
+       <path d="M60 79 C47 68 36 83 60 98 C84 83 73 68 60 79Z" fill="#e9a0c0"/>
+      </svg>
+     </div>
+     <h4>akuuu syaanagg bangett smaa kamuuu</h4>
+     <p>semua hal yang pengen aku ceritain tentang rasa sayangku</p>
+     <b>buka buku</b>
+    </div>
+   </button>
+
+   <button class="book" data-book="1">
+    <div class="cover">
+     <small>02 · FROM MY HEART</small>
+     <div class="art">
+      <svg viewBox="0 0 120 115" xmlns="http://www.w3.org/2000/svg">
+       <rect x="23" y="19" width="74" height="78" rx="10" fill="#fff7fc" transform="rotate(-5 60 58)"/>
+       <path d="M35 42 H82 M35 53 H78 M35 64 H70" stroke="#a8bce8" stroke-width="3" stroke-linecap="round"/>
+       <path d="M70 76 C55 64 44 79 70 95 C96 79 85 64 70 76Z" fill="#8eace7"/>
+       <path d="M84 22 L94 32 L81 45 L71 35Z" fill="#e5b2ce"/>
+       <path d="M71 35 L66 47 L81 45Z" fill="#c7b6ed"/>
+      </svg>
+     </div>
+     <h4>akuuu mintaa maaaf</h4>
+     <p>tentang kesalahan dan usaha untuk menjadi lebih baik</p>
+     <b>buka buku</b>
+    </div>
+   </button>
+
+   <button class="book" data-book="2">
+    <div class="cover">
+     <small>03 · OUR STORY</small>
+     <div class="art">
+      <svg viewBox="0 0 120 115" xmlns="http://www.w3.org/2000/svg">
+       <circle cx="60" cy="57" r="44" fill="#f8f0ff"/>
+       <circle cx="44" cy="51" r="17" fill="#d9b9ed"/>
+       <circle cx="76" cy="51" r="17" fill="#a9c5ef"/>
+       <circle cx="39" cy="48" r="2.5" fill="#65536e"/>
+       <circle cx="49" cy="48" r="2.5" fill="#65536e"/>
+       <circle cx="71" cy="48" r="2.5" fill="#65536e"/>
+       <circle cx="81" cy="48" r="2.5" fill="#65536e"/>
+       <path d="M41 57 Q44 61 47 57 M73 57 Q76 61 79 57" stroke="#65536e" fill="none" stroke-width="2"/>
+       <path d="M60 71 C48 60 37 75 60 90 C83 75 72 60 60 71Z" fill="#d994ba"/>
+       <circle cx="28" cy="28" r="4" fill="#e4b3d2"/>
+       <circle cx="94" cy="31" r="4" fill="#c5b5ed"/>
+      </svg>
+     </div>
+     <h4>kamuuu samaa akuuu terusss</h4>
+     <p>tentang rasa sayang dan keinginan untuk terus bersama</p>
+     <b>buka buku</b>
+    </div>
+   </button>
+  </div>
+ </section>
+ <footer>from all to ell</footer>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+ <div class="modal-inner">
+  <div class="modal-top">
+   <span id="modalTitle">from all to ell</span>
+   <button class="close" id="close">×</button>
+  </div>
+  <div class="open-book" id="openBook">
+   <section class="left">
+    <div class="hint">A LITTLE LETTER</div>
+    <h3 id="leftTitle"></h3>
+    <p id="leftSubtitle">sebuah cerita kecil dari all</p>
+    <div class="left-art">
+     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="38" fill="#f5dbe8"/>
+      <path d="M50 42 C30 23 16 44 50 70 C84 44 70 23 50 42Z" fill="#df9cbd"/>
+     </svg>
+    </div>
+   </section>
+   <section class="right" id="right">
+    <div class="kicker">A LETTER FROM ALL</div>
+    <h4 id="pageTitle"></h4>
+    <div class="page-text" id="pageText"></div>
+    <div class="page-bottom">
+     <span id="count"></span>
+     <div>
+      <button id="prev">←</button>
+      <button id="next">selanjutnya</button>
+     </div>
+    </div>
+   </section>
+  </div>
+ </div>
+</div>
+
+<audio id="backgroundMusic"
+       src="https://orangefreesounds.com/wp-content/uploads/2025/03/Emotional-love-piano-melody.mp3"
+       loop preload="none"></audio>
+
+<script>
+const books=[
+{
+title:"akuuu syaanagg bangett smaa kamuuu",
+subtitle:"semua hal yang pengen aku ceritain tentang kamuuu",
+pages:[
+["akuuu syaanagg bangett smaa kamuuu","akuuu cuma mauu kamuuu tauu kalau akuuu syaanangg bangett sama kamuuu. kadangg akuuu bingung gimanaa caranyaa menjelaskan semua perasaan iniii, tapii akuuu berharap kamuuu bisaa merasakan ketulusan akuuu dari hal-hal kecil yang akuuu lakukan. kamuuu punya tempat istimewaa di hati akuuu."],
+["kamuuu bikin hari akuuu lebih berartiii","kadangg cuma ngobrol sama kamuuu ajaa udah bikin hari akuuu terasa lebih baikkk. cerita sederhana, candaan random, dan obrolan kecil kitaa bisaa jadi sesuatu yang akuuu inget terusss. mungkin buat orang lain biasa ajaa, tapii buat akuuu momen sama kamuuu itu berartiii."],
+["akuuu sukaa hal kecil tentang kamuuu","akuuu sukaa caraa kamuuu cerita, caraa kamuuu menanggapi hal-hal kecil, dan caraa kamuuu menjadi diri kamuuu sendiriii. akuuu ga butuh semuanya selalu sempurnaa. akuuu cuma pengen kitaa bisaa menikmati kebersamaan dan menghargai hal-hal sederhana yang kita punyaaa."],
+["terima kasih sudah hadirrr","terima kasih yaaa sudah hadir dalam cerita akuuu. terima kasih buat waktu, perhatian, dan semua momen yang pernah kita bagiinn. akuuu mungkin ga selalu pandai mengungkapkan perasaan, tapii akuuu menghargai kamuuu lebih dari yang bisaa akuuu jelaskan dengan kata-kataa."],
+["akuuu mauu memahami kamuuu","akuuu pengen terus belajar memahami kamuuu, termasuk saat kamuuu lagi capekk, sedihh, atauu butuh waktu sendiri. kamuuu ga harus selalu ceriaa di depan akuuu. akuuu pengen kitaa bisaa saling jujur dan merasa nyaman menjadi diri sendiri tanpa takut dihakimiii."],
+["tentang cerita sederhana kitaa","akuuu pengen punya lebih banyak cerita sama kamuuu. ngobrol tentang hari kitaa, ketawaa karena hal random, dan saling berbagi cerita kecil. akuuu berharap nanti kitaa bisaa mengingat momen-momen itu dengan senyuman karena pernah punya waktu yang menyenangkan bersamaaa."],
+["akuuu bangga sama kamuuu","akuuu berharap kamuuu selalu percaya sama diri kamuuu sendiri. kalau ada hari yang terasa berat, jangan lupa kalau kamuuu tetap punya kesempatan buat belajar dan mencoba lagi. akuuu pengen mendukung hal-hal baik yang kamuuu perjuangkan tanpa membuat kamuuu merasa harus jadi orang lainnn."],
+["akuuu mauu terus belajar","akuuu juga masih punya kekurangan dan masih perlu belajar banyak hal. akuuu mauu belajar lebih sabar, lebih jujur, dan lebih baik dalam mendengarkan kamuuu. buat akuuu, rasa sayang bukan cuma tentang kata manis, tapii juga tentang usaha untuk saling menghargai setiap harii."],
+["harapan kecil akuuu","akuuu berharap kitaa bisaa terus membuat kenangan baik selama kitaa sama-sama merasa bahagiaa dan nyaman. semogaa kitaa bisaa saling mendukung, saling menghormati, dan membicarakan masalah tanpa sengaja menyakiti satu sama lainnn."],
+["dari akuuu untuk kamuuu","kalau ada satu hal yang pengen akuuu sampaikan di akhir buku iniii, itu adalah akuuu syaanangg bangett sama kamuuu. terima kasih sudah menjadi bagian dari hari-hari akuuu. akuuu berharap kamuuu selalu merasa dihargai, disayangi, dan bebas menjadi diri kamuuu sendiriii."]
+]},
+{
+title:"akuuu mintaa maaaf",
+subtitle:"sebuah permintaan maaf yang tulus dari akuuu",
+pages:[
+["akuuu mintaa maaaf yaaa","akuuu mintaa maaaf kalau selama ini akuuu banyak salaa, baik dari perkataan, sikapp, atauu caraa akuuu menghadapi sesuatu. akuuu sadar mungkin ada hal yang menurut akuuu biasa ajaa, tapii ternyata bikin kamuuu sedihh atauu kecewaa. akuuu ga mauu menganggap perasaan kamuuu sepeleee."],
+["maaff kalau akuuu bikin kamuuu sedihh","kalau pernah ada kata-kata akuuu yang bikin hati kamuuu ga enakk, akuuu benar-benar mintaa maaafff. akuuu seharusnya lebih hati-hati saat ngomongg dan lebih mikirin gimanaa perasaan kamuuu. akuuu ga bisaa mengubah hal yang sudah terjadi, tapii akuuu mauu belajar dari situu."],
+["akuuu tauu akuuu masih banyak salaa","akuuu bukan orang yang sempurnaa. kadangg akuuu bisaa salah paham, terlalu cepat menyimpulkann, atauu ga bisaa menyampaikan apa yang akuuu rasain dengan baik. tapii akuuu ga mauu terus memakai kekurangan itu sebagai alasan. akuuu mauu berusaha supaya kesalahan yang sama ga terus berulanggg."],
+["akuuu mauu dengerin kamuuu","akuuu pengenn belajar dengerin kamuuu sampai selesai sebelum menjawab atauu membela diri. akuuu mauu memahami kenapaa sesuatu terasa penting buat kamuuu, bukan cuma melihatnya dari sudut pandang akuuu sendiri. perasaan kamuuu juga pentingg, dan akuuu mauu lebih menghargainyaa."],
+["maaff bukan cuma kata-kataa","akuuu tauu kata maaff ajaa ga cukup kalau sikap akuuu ga berubah. karena itu akuuu mauu berusaha memperbaiki caraa akuuu berbicara, lebih jujur, dan lebih bertanggung jawab atas apa yang akuuu lakukan. akuuu pengenn kamuuu bisaa melihat usahaa akuuu lewat tindakann, bukan cuma janji."],
+["kamuuu boleh butuh waktuu","akuuu ngerti kalau kamuuu ga harus langsung baik-baik aja setelah akuuu minta maaff. kamuuu boleh butuh waktuu buat menenangkan diri dan memahami perasaan kamuuu. akuuu akan berusaha menghargai itu dan ga memaksa kamuuu buat cepat-cepat melupakan hal yang bikin kamuuu sedihh."],
+["kita belajar pelan-pelann","akuuu pengenn kalau ada masalah, kita bisaa membicarakannya dengan tenangg. kita boleh punya pendapatt yang berbeda, tapii semogaa kita ga saling merendahkan atauu sengaja menyakiti. akuuu mauu belajar menyelesaikan masalah dengan cara yang lebih dewasa dan saling menghargai."],
+["terima kasih sudah jujurr","terima kasih kalau kamuuu sudah berani cerita tentang apa yang bikin kamuuu ga nyaman. akuuu tauu itu kadangg ga mudahh. akuuu akan berusaha mendengarkan dengan pikiran terbuka dan ga menganggap masukan kamuuu sebagai serangan. akuuu ingin memahami, bukan sekadar menang dalam perdebatan."],
+["akuuu akan berusaha lebih baik","akuuu ga mauu berjanji kalau akuuu ga akan pernah salah lagi, karena akuuu masih belajar. tapii akuuu mauu bertanggung jawab saat salahh dan mencoba melakukan perubahan yang nyata. akuuu pengenn hubungan kita dipenuhi kejujuran, rasa hormat, dan usaha dari kita berdua."],
+["sekali lagi, maaff yaa","sekali lagi akuuu mintaa maaafff kalau akuuu banyak salaa dan pernah bikin kamuuu kecewaa. akuuu tulis ini bukan supaya kamuuu merasa harus memaafkan akuuu saat itu juga, tapii supaya kamuuu tauu akuuu menyadari kesalahan akuuu dan mauu memperbaikinya. pelan-pelann yaa."]
+]},
+{
+title:"kamuuu samaa akuuu terusss",
+subtitle:"surat tentang harapan dan rasa takut kehilangan",
+pages:[
+["kamuuu samaa akuuu terusss","akuuu pengenn kita bisaa terus berjalan barengg selama kita sama-sama mauu dan merasa bahagiaa. akuuu syaanangg kamuuu, dan kadangg akuuu takut kehilangan seseorang yang sudah jadi bagian penting dalam hari-hari akuuu. akuuu cuma mauu jujur tentang perasaan itu tanpa membuat kamuuu merasa terbebani."],
+["akuuu gamauu kehilangan kamuuu","jujurr akuuu gamauu kehilangan kamuuu. akuuu masih pengenn punya banyak cerita samaa kamuuu, ngobroll tentang hal random, ketawaa barengg, dan saling berbagi cerita tentang hari kita. tapii akuuu juga tauu hubungan yang baik perlu kepercayaan, usaha, dan rasa nyaman dari kita berdua."],
+["kalau akuuu mulai takut","kadangg saat ada masalah atauu obrolan terasa berbeda, akuuu bisaa kepikiran banyak hal. akuuu mauu belajar supaya ga langsung menganggap yang terburuk dan lebih berani bertanya dengan tenang. akuuu pengenn membangun kepercayaan, bukan membiarkan rasa takut membuat kita salah paham."],
+["akuuu mauu kita saling memilih","buat akuuu, hubungan yang baik bukan tentang menahan seseorang supaya ga pergi, tapii tentang dua orang yang sama-sama ingin menjaga hubungan itu. akuuu pengenn kita terus memilih untuk saling menghargai, jujur, dan berusaha karena memang kita berdua mauu, bukan karena merasa terpaksa."],
+["kalau kita lagi bertengkar","kalau suatu saat kita bertengkar, akuuu harapp kita ga lupa kalau kita tetap harus saling menghormati. kita boleh menenangkan diri dulu, lalu bicara lagi saat sudah siap. akuuu ga mauu masalah sesaat membuat kita mengucapkan hal yang nantinya kita sesali."],
+["kamuuu tetap boleh punya waktuu","akuuu mauu menghargai waktu kamuuu untuk keluarga, teman, kegiatan, dan diri sendiri. kamuuu ga harus selalu tersedia setiap saat untuk membuktikan rasa sayang. akuuu pengenn kita punya kepercayaan yang bikin kita berdua tetap nyaman dan bisa menjalani kehidupan masing-masing."],
+["akuuu mauu jadi tempat cerita","akuuu pengenn jadi orang yang bisaa kamuuu ajak ngobroll ketika kamuuu ingin cerita. akuuu mungkin ga selalu punya solusi, tapii akuuu bisaa berusaha mendengarkan dan memahami. dan saat akuuu yang lagi kesulitan, akuuu juga mauu belajar menyampaikan perasaan dengan jujur tanpa menyalahkan kamuuu."],
+["masa depan yang akuuu harapkan","akuuu berharap kita punya banyak kenangan baik di masa depan. bukan berarti semuanya harus selalu sempurna, tapii semogaa kita bisaa tumbuh, belajar, dan saling mendukung. akuuu pengenn melihat kita menjadi pribadi yang lebih baik tanpa harus kehilangan diri sendiri."],
+["jangan lupa bahagiaa","akuuu mauu kamuuu tetap menjaga diri, mengejar hal-hal yang kamuuu sukaa, dan punya banyak alasan untuk tersenyum. rasa sayang akuuu ga seharusnya membuat kamuuu merasa terkekang. akuuu pengenn kita saling menambah kebahagiaan dan saling menghormati batasan masing-masing."],
+["akuuu pengenn tetap sama kamuuu","akuuu gamauu kehilangan kamuuu, dan akuuu berharap kita bisaa terus bersama selama kita sama-sama ingin menjaga cerita ini. akuuu syaanangg kamuuu dengan tulus, dan akuuu mauu membuktikannya lewat kejujuran, perhatian, dan usaha. semogaa kita bisaa terus berjalan bersama dengan hati yang saling menghargai."]
+]}
+];
+
+const intro=document.getElementById("intro");
+const envelope=document.getElementById("envelope");
+const app=document.getElementById("app");
+const music=document.getElementById("backgroundMusic");
+let soundOn=true,ctx=null;
+
+function tone(freq,dur=.15,delay=0,type="sine",volume=.025){
+ if(!soundOn)return;
+ try{
+  ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();
+  if(ctx.state==="suspended")ctx.resume();
+  const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+delay;
+  o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(volume,t+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+dur+.03);
+ }catch(e){}
+}
+function bookSound(){
+ tone(180,.12,0,"triangle",.018);
+ tone(260,.16,.07,"triangle",.02);
+ tone(420,.2,.16,"sine",.018);
+}
+function pageSound(){
+ tone(330,.08,0,"triangle",.018);
+ tone(440,.12,.06,"triangle",.02);
+ tone(620,.1,.12,"sine",.015);
+}
+
+async function playMusic(){
+ if(!soundOn)return;
+ try{
+  music.volume=.3;
+  await music.play();
+ }catch(e){
+  document.getElementById("soundToggle").textContent="ketuk untuk musik";
+ }
+}
+function stopMusic(){
+ music.pause();
+ music.currentTime=0;
+}
+
+function openEnvelope(){
+ if(envelope.classList.contains("open"))return;
+ envelope.classList.add("open");
+ bookSound();
+ playMusic();
+ setTimeout(()=>{
+  intro.classList.add("gone");
+  app.style.display="block";
+  requestAnimationFrame(()=>app.classList.add("ready"));
+ },750);
+}
+function closeEnvelope(){
+ stopMusic();
+ app.style.display="none";
+ app.classList.remove("ready");
+ intro.classList.remove("gone");
+ envelope.classList.remove("open");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+envelope.addEventListener("click",openEnvelope);
+envelope.addEventListener("keydown",e=>{
+ if(e.key==="Enter"||e.key===" "){e.preventDefault();openEnvelope()}
+});
+document.getElementById("closeLetter").onclick=closeEnvelope;
+
+document.getElementById("soundToggle").onclick=async e=>{
+ soundOn=!soundOn;
+ e.currentTarget.textContent=soundOn?"suara: nyala":"suara: mati";
+ if(soundOn){
+  pageSound();
+  if(envelope.classList.contains("open"))await playMusic();
+ }else{
+  stopMusic();
+ }
+};
+
+const modal=document.getElementById("modal");
+const openBook=document.getElementById("openBook");
+const right=document.getElementById("right");
+let activeBook=0,activePage=0;
+
+function render(animate=true){
+ const b=books[activeBook],p=b.pages[activePage];
+ document.getElementById("modalTitle").textContent=b.title;
+ document.getElementById("leftTitle").textContent=b.title;
+ document.getElementById("leftSubtitle").textContent=b.subtitle;
+ document.getElementById("pageTitle").textContent=p[0];
+ const content=document.getElementById("pageText");
+ content.replaceChildren();
+ const para=document.createElement("p");
+ para.textContent=p[1];content.appendChild(para);
+ document.getElementById("count").textContent=
+  `halaman ${activePage+1} dari ${b.pages.length}`;
+ document.getElementById("next").textContent=
+  activePage===b.pages.length-1?"selesai":"selanjutnya →";
+ document.getElementById("prev").disabled=activePage===0;
+ right.scrollTop=0;
+ if(animate){
+  right.classList.remove("turn");
+  void right.offsetWidth;
+  right.classList.add("turn");
+  pageSound();
+ }
+}
+function showBook(i){
+ activeBook=i;activePage=0;render(false);
+ modal.classList.add("show");
+ document.body.style.overflow="hidden";
+ openBook.classList.remove("opening");
+ void openBook.offsetWidth;
+ openBook.classList.add("opening");
+ bookSound();
+}
+function closeBook(){
+ modal.classList.remove("show");
+ document.body.style.overflow="";
+}
+document.querySelectorAll(".book").forEach(btn=>{
+ btn.addEventListener("click",()=>showBook(Number(btn.dataset.book)));
+});
+document.getElementById("close").onclick=closeBook;
+document.getElementById("next").onclick=()=>{
+ if(activePage<books[activeBook].pages.length-1){
+  activePage++;render();
+ }else closeBook();
+};
+document.getElementById("prev").onclick=()=>{
+ if(activePage>0){activePage--;render()}
+};
+modal.addEventListener("click",e=>{if(e.target===modal)closeBook()});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){
+  if(modal.classList.contains("show"))closeBook();
+  else if(envelope.classList.contains("open"))closeEnvelope();
+ }
+ if(!modal.classList.contains("show"))return;
+ if(e.key==="ArrowRight"&&activePage<books[activeBook].pages.length-1){
+  activePage++;render();
+ }
+ if(e.key==="ArrowLeft"&&activePage>0){activePage--;render()}
+});
+</script>
+</body>
+</html>
